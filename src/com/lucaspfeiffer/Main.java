@@ -50,9 +50,10 @@ public class Main extends PApplet {
             performMove();
             pongBall.move();
             pongBall.render();
-            leftBumper.render();
-            rightBumper.render();
+
         }
+        leftBumper.render();
+        rightBumper.render();
 
     }
 
