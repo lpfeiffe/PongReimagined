@@ -16,11 +16,7 @@ public class Main extends PApplet {
     private Stage stage;
     private Bumper leftBumper;
     private Bumper rightBumper;
-    private boolean leftUP;
-    private boolean leftDOWN;
-    private boolean rightUP;
-    private boolean rightDOWN;
-
+    private boolean[] bumperMoved = new boolean[4]; //0 = LU, 1 = LD, 2 = RU, 3 = RD
 
     //Used to initialize one-time settings for the sketch
     public void settings() {
@@ -40,12 +36,9 @@ public class Main extends PApplet {
             ui.displayStartScreen();
         }
         else if (stage == Stage.LEVEL1) {
-            ui.displayLevel1();
+            ui.displayLevel1("0", "0");
         }
-        else {
 
-        }
-        //render ball
         if (stage != Stage.START && stage != Stage.END) {
             performMove();
             pongBall.move();
@@ -54,13 +47,12 @@ public class Main extends PApplet {
         }
         leftBumper.render();
         rightBumper.render();
-
     }
 
     public void mouseClicked() {
         if (stage == Stage.START)
             stage = Stage.LEVEL1;
-        pongBall.firstMove = true;
+        pongBall.firstMove = true; //REMOVE AFTER TESTING
     }
 
     public void keyPressed() {
@@ -81,29 +73,21 @@ public class Main extends PApplet {
         }
     }
 
-    public void userMove(int key, boolean pressed) {
-            if (keyCode == UP) //player 2 moved their paddle
-                rightUP = pressed;
-            if (keyCode == DOWN)
-                rightDOWN = pressed;
+    private void userMove(int key, boolean pressed) {
+        if (keyCode == UP) bumperMoved[2] = pressed; //player 2 moved their paddle
+        if (keyCode == DOWN) bumperMoved[3] = pressed;
     }
 
-    public void userMove(char key, boolean pressed) {
-        if (key == 'w' || key == 'W') //player 1 moved their paddle
-            leftUP = pressed;
-        else if (key == 's' || key == 'S')
-            leftDOWN = pressed;
+    private void userMove(char key, boolean pressed) {
+        if ((key == 'w' || key == 'W')) bumperMoved[0] = pressed; //player 1 moved their paddle
+        if ((key == 's' || key == 'S')) bumperMoved[1] = pressed;
     }
 
-    public void performMove() {
-        if (rightUP)
-            rightBumper.move(0);
-        if (rightDOWN)
-            rightBumper.move(1);
-        if (leftUP)
-            leftBumper.move(0);
-        if (leftDOWN)
-            leftBumper.move(1);
+    private void performMove() {
+        if (bumperMoved[2]) rightBumper.move(0); //right up
+        if (bumperMoved[3]) rightBumper.move(1); //right down
+        if (bumperMoved[0]) leftBumper.move(0); //left up
+        if (bumperMoved[1]) leftBumper.move(1); //left down
     }
 
     public static void main(String[] args) {

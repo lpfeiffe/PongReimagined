@@ -22,8 +22,9 @@ public class UI {
 
     }
 
-    public void displayLevel1() {
+    public void displayLevel1(String p1Score, String p2Score) {
         drawBorder();
+        displayScore(p1Score, p2Score);
     }
 
     private void displayTitle(String string, float xPos, float yPos) {
@@ -36,6 +37,15 @@ public class UI {
         sketch.textSize(subTitleSize);
         sketch.textAlign(sketch.CENTER);
         sketch.text(string, xPos, yPos);
+    }
+
+    private void displayScore(String p1Score, String p2Score) {
+        sketch.noStroke();
+        sketch.fill(255);
+        sketch.rectMode(sketch.CENTER);
+        sketch.rect(sketch.width/2, 75, 3, 80);
+        displayTitle(p1Score, sketch.width/2 - 35, 95); //player 1s score
+        displayTitle(p2Score, sketch.width/2 + 35, 95); //player 2s score
     }
 
     public void drawBorder() {

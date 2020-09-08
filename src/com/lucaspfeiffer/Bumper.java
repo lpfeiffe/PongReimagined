@@ -46,7 +46,7 @@ public class Bumper {
                 yPos -= 1;
     }
 
-    public int onEdge() {
+    private int onEdge() {
         if (yPos - bumperHeight / 2 < ui.getBorderMargin()) //top border
             return 1; //on top edge
         if (yPos + bumperHeight / 2 > sketch.height - ui.getBorderMargin()) //bottom border
