@@ -12,6 +12,7 @@ public class Main extends PApplet {
 
     private final static Main sketch = new Main();
     private final static UI ui = new UI(sketch);
+    private final int maxScore = 10;
     private Ball pongBall;
     private Stage stage;
     private Bumper leftBumper;
@@ -32,27 +33,42 @@ public class Main extends PApplet {
     public void draw() {
         background(0); //black bg
         //select which stage of the game to show
+
         if (stage == Stage.START) {
             ui.displayStartScreen();
-        }
-        else if (stage == Stage.LEVEL1) {
-            ui.displayLevel1("0", "0");
+        } else if (stage == Stage.LEVEL1) {
+            ui.displayLevel1(leftBumper.getScore(), rightBumper.getScore());
+        } else if (stage == Stage.END) {
+            if (leftBumper.getScore() >= maxScore) {
+                ui.displayEnd("Player 1");
+            } else if (rightBumper.getScore() >= maxScore) {
+                ui.displayEnd("Player 2");
+            }
         }
 
         if (stage != Stage.START && stage != Stage.END) {
-            performMove();
-            pongBall.move();
+            updateBumpers();
+            pongBall.move(leftBumper, rightBumper);
             pongBall.render();
-
+            if (pongBall.ballOut() != 0) {
+                if (pongBall.ballOut() < 0) rightBumper.setScore(rightBumper.getScore() + 1);
+                if (pongBall.ballOut() > 0) leftBumper.setScore((leftBumper.getScore() + 1));
+                if (leftBumper.getScore() >= maxScore || rightBumper.getScore() >= maxScore)
+                    stage = Stage.END;
+                else
+                    resetGameObjects(false);
+            }
         }
         leftBumper.render();
         rightBumper.render();
     }
 
     public void mouseClicked() {
-        if (stage == Stage.START)
-            stage = Stage.LEVEL1;
-        pongBall.firstMove = true; //REMOVE AFTER TESTING
+        if (stage == Stage.START) stage = Stage.LEVEL1;
+        if (stage == Stage.END) {
+            stage = Stage.START;
+            resetGameObjects(true);
+        }
     }
 
     public void keyPressed() {
@@ -83,11 +99,20 @@ public class Main extends PApplet {
         if ((key == 's' || key == 'S')) bumperMoved[1] = pressed;
     }
 
-    private void performMove() {
+    private void updateBumpers() {
         if (bumperMoved[2]) rightBumper.move(0); //right up
         if (bumperMoved[3]) rightBumper.move(1); //right down
         if (bumperMoved[0]) leftBumper.move(0); //left up
         if (bumperMoved[1]) leftBumper.move(1); //left down
+    }
+
+    private void resetGameObjects(boolean newGame) {
+        if (newGame) {
+            leftBumper = new Bumper(sketch, ui, "left");
+            rightBumper = new Bumper(sketch, ui, "right");
+            bumperMoved = new boolean[4];
+        }
+        pongBall = new Ball(sketch, ui,20);
     }
 
     public static void main(String[] args) {

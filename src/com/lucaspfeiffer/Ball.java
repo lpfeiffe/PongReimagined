@@ -7,13 +7,14 @@ public class Ball {
     private PApplet sketch;
 
     private final float color = 255; //white ball
-    private final float ballSpeed = 5;
+    private float xVel = 0;
+    private float yVel = 0;
+    private float vSpeed = 100;
     private float xPos;
     private float yPos;
+    private float dt = 0.1F;
     private float radius;
     private UI ui;
-    public boolean firstMove;
-    private double theta;
 
     public Ball(PApplet sketch, UI ui, float radius) {
         this.sketch = sketch;
@@ -21,38 +22,32 @@ public class Ball {
         this.radius = radius;
         this.xPos = (float) sketch.width / 2;
         this.yPos = (float) sketch.height / 2;
-        this.firstMove = true;
+
+        double angle = calcRandomAngle();
+        xVel = (float)(vSpeed * Math.cos(angle));
+        yVel = (float)(vSpeed * Math.sin(angle));
     }
 
-    public void move() {
-        if (firstMove) {
-            xPos = (float) sketch.width / 2;
-            yPos = (float) sketch.height / 2;
-            theta = Math.asin((float) ((sketch.height / 2) / (sketch.width / 2)));
-            theta *= sketch.random(2);
-            //select a random position to start from
-            if (sketch.random(2) < 0.5) { // 0 = left, 1 = right
-                if (sketch.random(2) < 0.5) { // 0 = top, 1 = bottom
-                    xPos -= ballSpeed;
-                    yPos -= (ballSpeed * Math.tan(theta));
-                } else { //bottom left
-                    xPos -= ballSpeed;
-                    yPos += (ballSpeed * Math.tan(theta));
-                }
-            } else {
-                if (sketch.random(2) < 0.5) { // top right
-                    xPos += ballSpeed;
-                    yPos -= (ballSpeed * Math.tan(theta));
-                } else { //bottom right
-                    xPos += ballSpeed;
-                    yPos += (ballSpeed * Math.tan(theta));
-                }
-            }
-            firstMove = false;
-        } else {
-            xPos += ballSpeed;
-            yPos += ballSpeed;
-        }
+    public void move(Bumper left, Bumper right) {
+        xPos += xVel * dt;
+        yPos += yVel * dt;
+
+        if (yPos > (sketch.height - ui.getBorderMargin())) yVel *= -1;
+        if (yPos < ui.getBorderMargin()) yVel *= -1;
+        if ((xPos - radius < left.getxPos()) && (Math.abs(yPos - left.getyPos()) < left.getBumperHeight()/2)) xVel *= -1;
+        if ((xPos + radius > right.getxPos()) && (Math.abs(yPos - right.getyPos()) < right.getBumperHeight()/2)) xVel *= -1;
+    }
+
+    public int ballOut() {
+        if (xPos < ui.getBorderMargin()) return -1;
+        if (xPos > sketch.width - ui.getBorderMargin()) return 1;
+        return 0;
+    }
+
+    private double calcRandomAngle() {
+        double angle = sketch.random((float) (Math.PI/4 * -1),(float) (Math.PI/4));
+        if (sketch.random(-1, 1) < 0.0) angle += Math.PI;
+        return angle;
     }
 
     public void render() {

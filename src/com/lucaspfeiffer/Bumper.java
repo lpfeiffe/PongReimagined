@@ -7,6 +7,7 @@ public class Bumper {
     private PApplet sketch;
 
     private final float color = 255; //white ball
+
     private final float bumperWidth = 15;
     private final float bumperHeight = 150;
     private final float bumperSpeed = 8;
@@ -14,6 +15,7 @@ public class Bumper {
     private UI ui;
     private float xPos;
     private float yPos;
+    private int score = 0;
 
     public Bumper(PApplet sketch, UI ui, String side) {
         this.sketch = sketch;
@@ -59,5 +61,29 @@ public class Bumper {
         sketch.fill(color);
         sketch.rectMode(sketch.CENTER);
         sketch.rect(xPos, yPos, bumperWidth, bumperHeight);
+    }
+
+    public float getBumperWidth() {
+        return bumperWidth;
+    }
+
+    public float getBumperHeight() {
+        return bumperHeight;
+    }
+
+    public float getxPos() {
+        return xPos;
+    }
+
+    public float getyPos() {
+        return yPos;
+    }
+
+    public int getScore() {
+        return score;
+    }
+
+    public void setScore(int score) {
+        this.score = score;
     }
 }
