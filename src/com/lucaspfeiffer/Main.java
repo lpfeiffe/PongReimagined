@@ -18,6 +18,7 @@ public class Main extends PApplet {
     private Bumper leftBumper;
     private Bumper rightBumper;
     private boolean[] bumperMoved = new boolean[4]; //0 = LU, 1 = LD, 2 = RU, 3 = RD
+    private Button menuButtons[] = new Button[4];
 
     //Used to initialize one-time settings for the sketch
     public void settings() {
@@ -27,6 +28,7 @@ public class Main extends PApplet {
         leftBumper = new Bumper(sketch, ui, "left");
         rightBumper = new Bumper(sketch, ui, "right");
         stage = Stage.START;
+        createMenuButtons();
     }
 
     //This method is called 60 times per second (for 60 FPS)
@@ -35,7 +37,7 @@ public class Main extends PApplet {
         //select which stage of the game to show
 
         if (stage == Stage.START) {
-            ui.displayStartScreen();
+            ui.displayStartScreen(menuButtons);
         } else if (stage == Stage.LEVEL1) {
             ui.displayLevel1(leftBumper.getScore(), rightBumper.getScore());
         } else if (stage == Stage.END) {
@@ -51,10 +53,17 @@ public class Main extends PApplet {
             pongBall.move(leftBumper, rightBumper);
             pongBall.render();
             if (pongBall.ballOut() != 0) {
-                if (pongBall.ballOut() < 0) rightBumper.setScore(rightBumper.getScore() + 1);
-                if (pongBall.ballOut() > 0) leftBumper.setScore((leftBumper.getScore() + 1));
-                if (leftBumper.getScore() >= maxScore || rightBumper.getScore() >= maxScore)
+                if (pongBall.ballOut() < 0) {
+                    rightBumper.setScore(rightBumper.getScore() + 1);
+                    pongBall.resetHitCount();
+                }
+                if (pongBall.ballOut() > 0) {
+                    leftBumper.setScore((leftBumper.getScore() + 1));
+                    pongBall.resetHitCount();
+                }
+                if (leftBumper.getScore() >= maxScore || rightBumper.getScore() >= maxScore) {
                     stage = Stage.END;
+                }
                 else
                     resetGameObjects(false);
             }
@@ -64,7 +73,17 @@ public class Main extends PApplet {
     }
 
     public void mouseClicked() {
-        if (stage == Stage.START) stage = Stage.LEVEL1;
+        if (stage == Stage.START)
+        {
+            if (clickedButton(mouseX, mouseY, menuButtons[0]))
+                ;
+            else if (clickedButton(mouseX, mouseY, menuButtons[1]))
+                stage = Stage.LEVEL1;
+            else if (clickedButton(mouseX, mouseY, menuButtons[2]))
+                ;
+            else if (clickedButton(mouseX, mouseY, menuButtons[3]))
+                ;
+        }
         if (stage == Stage.END) {
             stage = Stage.START;
             resetGameObjects(true);
@@ -113,6 +132,22 @@ public class Main extends PApplet {
             bumperMoved = new boolean[4];
         }
         pongBall = new Ball(sketch, ui,20);
+    }
+
+    private void createMenuButtons() {
+        float color = 255;
+        float height = 50;
+        float width = 200;
+        float roundness = 7;
+        menuButtons[0] = new Button(sketch, color, "1 Player", height, width, roundness);
+        menuButtons[1] = new Button(sketch, color, "2 Player", height, width, roundness);
+        menuButtons[2] = new Button(sketch, color, "Store", height, width, roundness);
+        menuButtons[3] = new Button(sketch, color, "Statistics", height, width, roundness);
+    }
+
+    private boolean clickedButton(float mouseX, float mouseY, Button button) {
+        return (Math.abs(mouseX - button.getxPos()) <= button.getWidth())
+                && ((Math.abs(mouseY - button.getyPos())) <= button.getHeight());
     }
 
     public static void main(String[] args) {

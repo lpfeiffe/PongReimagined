@@ -15,11 +15,17 @@ public class UI {
         this.sketch = sketch;
     }
 
-    public void displayStartScreen() {
+    public void displayStartScreen(Button[] menuButtons) {
+        float titleY = (float)sketch.height/5;
+        float padding = 35;
+        float buttonPos = titleY + padding;
         drawBorder();
-        displayTitle("PONG REIMAGINED", (float)sketch.width/2, (float)sketch.height/3);
-        displaySubTitle("Click anywhere to begin", (float)sketch.width/2, (float)sketch.height/3 + 50);
+        displayTitle("PONG REIMAGINED", (float)sketch.width/2, titleY);
 
+        for (Button b : menuButtons) {
+            buttonPos += b.getHeight() + padding;
+            b.render((float)sketch.width/2, buttonPos);
+        }
     }
 
     public void displayLevel1(int p1Score, int p2Score) {
@@ -34,7 +40,7 @@ public class UI {
 
     private void displayTitle(String string, float xPos, float yPos) {
         sketch.textSize(titleSize);
-        sketch.textAlign(sketch.CENTER);
+        sketch.textAlign(sketch.CENTER, sketch.CENTER);
         sketch.text(string, xPos, yPos);
     }
 
